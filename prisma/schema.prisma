@@ -33,53 +33,74 @@ model Project {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  examScope         ExamScope?
   materials         Material[]
   examPoints        ExamPoint[]
   diagnosticRuns    DiagnosticRun[]
-  sprintPlans       SprintPlan[]
+  sprintPlan        SprintPlan?
   practiceSessions  PracticeSession[]
   aiTasks           AiTask[]
 }
 
 model Material {
-  id             String    @id @default(uuid())
-  projectId      String
-  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  title          String
-  type           String
-  fileUrl        String?
-  rawText        String?
-  status         String    @default("pending")
-  extractedText  String?
-  extractionJson Json?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id               String    @id @default(uuid())
+  projectId        String
+  project          Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title            String
+  type             String    // pdf | text | past_exam | video_link
+  sourceType       String    @default("pdf") // pdf | text | video_link | past_exam
+  sourceMeta       Json?     // {platform, url, duration, author} for video links
+  fileUrl          String?
+  rawText          String?
+  parsedTranscript Json?     // segmented subtitles for video links
+  status           String    @default("pending")
+  extractedText    String?
+  extractionJson   Json?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 model ExamPoint {
-  id               String   @id @default(uuid())
-  projectId        String
-  project          Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  title            String
-  chapterTitle     String?
-  summary          String?
-  examProbability  Float?
-  estimatedScore   Float?
-  studyCostMinutes Int?
-  roiScore         Float?
-  targetTier       String?
-  importanceLevel  Int?
-  formulas         Json?
-  commonPatterns   Json?
-  solvingTemplate  Json?
-  traps            Json?
-  sourceEvidence   Json?
-  masteryStatus    String   @default("unknown")
-  confidenceScore  Int      @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                String   @id @default(uuid())
+  projectId         String
+  project           Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title             String
+  chapterTitle      String?
+  summary           String?
+  // 考试价值层（核心）
+  estimatedScoreMin Float?   // 该考点通常最低贡献多少分
+  estimatedScoreMax Float?   // 最高贡献多少分
+  examProbability   Float?   // 近几套题出现概率 0~1
+  hitRate           Float?   // 命中率（同 examProbability，语义更明确）
+  studyCostMinutes  Int?     // 从0到能做基础题需要多久
+  roiScore          Float?   // 提分性价比 = (分值×概率×薄弱度)/耗时
+  targetTier        String?  // pass | 75 | 85 | all — 属于哪档目标
+  importanceTier    String?  // must | important | optional | skip — 必学/重要/可选/可放弃
+  // 内容层
+  formulas          Json?
+  commonPatterns    Json?
+  solvingTemplate   Json?
+  traps             Json?
+  sourceEvidence    Json?    // 来源材料/往年题引用
+  // 掌握状态
+  masteryStatus     String   @default("unknown") // unknown | weak | pass | good
+  confidenceScore   Int      @default(0)         // 0~100
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   practiceQuestions PracticeQuestion[]
+  studyTasks        StudyTask[]
+}
+
+model ExamScope {
+  id          String   @id @default(uuid())
+  projectId   String   @unique
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sourceType  String   // user_material | manual_input | ai_inferred
+  title       String
+  chapterTree Json     // 考试范围章节树 [{chapter, topics[], weight}]
+  coverage    Float?   // 当前资料覆盖度 0~1
+  createdAt   DateTime @default(now())
 }
 
 model DiagnosticRun {
@@ -96,15 +117,39 @@ model DiagnosticRun {
 }
 
 model SprintPlan {
-  id         String   @id @default(uuid())
-  projectId  String
-  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  targetTier String
-  totalDays  Int
-  status     String   @default("active")
-  planJson   Json
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id              String   @id @default(uuid())
+  projectId       String   @unique
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  targetTier      String   // pass | 75 | 85
+  totalDays        Int
+  status          String   @default("active")
+  strategySummary Json?    // 策略摘要（文字描述+关键数据）
+  startScore      Int?     // 初始诊断估分
+  targetScore     Int
+  latestPredScore Int?     // 最新预测分
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tasks           StudyTask[]
+}
+
+model StudyTask {
+  id               String   @id @default(uuid())
+  projectId        String
+  planId           String
+  plan             SprintPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  examPointId      String?
+  examPoint        ExamPoint? @relation(fields: [examPointId], references: [id])
+  date             DateTime // 安排在哪一天
+  title            String
+  taskType         String   // learn | practice | review | mock
+  priority         Int      @default(3) // 1-5, 1=最高优先
+  estimatedMinutes Int      // 预计耗时（分钟）
+  expectedGain     Float?   // 预计提分
+  status           String   @default("todo") // todo | doing | done | skipped
+  sourceReason     String?  // 为什么推荐：weak_point | high_roi | exam_hotspot | error_retry
+  completedAt      DateTime?
+  createdAt        DateTime @default(now())
 }
 
 model PracticeQuestion {

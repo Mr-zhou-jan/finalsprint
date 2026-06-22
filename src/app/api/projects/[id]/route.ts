@@ -9,7 +9,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const { id } = await params
   const project = await db.project.findUnique({
     where: { id, userId: user.id },
-    include: { materials: true, examPoints: true, diagnosticRuns: { orderBy: { createdAt: "desc" } }, sprintPlans: true },
+    include: { materials: true, examPoints: true, diagnosticRuns: { orderBy: { createdAt: "desc" } }, sprintPlan: { include: { tasks: true } } },
   })
   if (!project) return NextResponse.json({ error: "项目不存在" }, { status: 404 })
   return NextResponse.json({ project })

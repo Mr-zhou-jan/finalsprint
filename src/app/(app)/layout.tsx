@@ -32,8 +32,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center"><Zap className="w-5 h-5 text-white" /></div>
           <span className="font-bold text-lg">FinalSprint</span>
         </Link>
-        <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-1">
-          <Link href="/projects" className={cn("flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors", pathname.startsWith("/projects") ? "bg-orange-50 text-orange-700" : "text-zinc-600 hover:bg-zinc-100")}><LayoutDashboard className="w-5 h-5" />项目列表</Link>
+        <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-0.5">
+          <p className="px-3 py-1 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">冲刺</p>
+          <Link href="/projects" className={cn("flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors", pathname === "/projects" ? "bg-orange-50 text-orange-700" : "text-zinc-600 hover:bg-zinc-100")}><LayoutDashboard className="w-5 h-5" />科目列表</Link>
         </nav>
         <div className="border-t p-3">
           <div className="flex items-center gap-3 px-2 py-1 mb-2">

@@ -27,7 +27,7 @@ export default function ProjectOverviewPage() {
   const hasMaterials = project.materials?.length > 0
   const hasExamPoints = project.examPoints?.length > 0
   const hasDiagnostic = project.diagnosticRuns?.length > 0
-  const hasPlan = project.sprintPlans?.length > 0
+  const hasPlan = project.sprintPlan?.length > 0
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
