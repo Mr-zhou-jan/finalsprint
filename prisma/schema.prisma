@@ -1,3 +1,6 @@
+// FinalSprint V1 — Prisma Schema
+// 对齐评审建议 + 保留提分系统化字段
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -5,6 +8,8 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// ========== 用户与考试项目 ==========
 
 model User {
   id         String    @id @default(uuid())
@@ -16,6 +21,8 @@ model User {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   projects   Project[]
+  questionAttempts QuestionAttempt[]
+  wrongQuestions    WrongQuestion[]
 }
 
 model Project {
@@ -25,85 +32,113 @@ model Project {
   subjectName   String
   examDate      DateTime
   targetScore   Int
-  currentLevel  String
-  dailyMinutes  Int
-  status        String   @default("active")
+  currentLevel  String   // zero | weak | average
+  dailyMinutes  Int      // 每日可用分钟
+  goalType      String   @default("pass") // pass | score_boost
+  status        String   @default("active") // active | archived | completed
   predictedMin  Int?
   predictedMax  Int?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  examScope         ExamScope?
-  materials         Material[]
-  examPoints        ExamPoint[]
-  diagnosticRuns    DiagnosticRun[]
-  sprintPlan        SprintPlan?
-  practiceSessions  PracticeSession[]
-  aiTasks           AiTask[]
+  examScope        ExamScope?
+  modules          SubjectModule[]
+  materials        Material[]
+  examPoints       ExamPoint[]
+  diagnosticRuns   DiagnosticRun[]
+  sprintPlan       SprintPlan?
+  practiceSessions PracticeSession[]
+  aiTasks          AiTask[]
+  wrongQuestions   WrongQuestion[]
 }
 
-model Material {
-  id               String    @id @default(uuid())
-  projectId        String
-  project          Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  title            String
-  type             String    // pdf | text | past_exam | video_link
-  sourceType       String    @default("pdf") // pdf | text | video_link | past_exam
-  sourceMeta       Json?     // {platform, url, duration, author} for video links
-  fileUrl          String?
-  rawText          String?
-  parsedTranscript Json?     // segmented subtitles for video links
-  compressedNotes  Json?     // CrashSummary: {sections[{title,examPoints,mustRemember,commonTraps,skipable}],finalCheatSheet}
-  status           String    @default("pending")
-  extractedText    String?
-  extractionJson   Json?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  examPointMaps    MaterialExamPointMap[]
+// ========== 课程结构与知识点 ==========
+
+model SubjectModule {
+  id                  String   @id @default(uuid())
+  projectId           String
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parentId            String?  // 支持树状章节
+  parent              SubjectModule? @relation("ModuleTree", fields: [parentId], references: [id])
+  children            SubjectModule[] @relation("ModuleTree")
+  title               String
+  description         String?
+  orderIndex          Int      @default(0)
+  estimatedScoreValue Float?   // 该章节预计占分
+  priorityLevel       Int?     // 1-5
+  masteryStatus       String   @default("unknown")
+  createdAt           DateTime @default(now())
+
+  examPoints ExamPoint[]
 }
 
 model ExamPoint {
-  id                String   @id @default(uuid())
+  id                String       @id @default(uuid())
   projectId         String
-  project           Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project           Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  moduleId          String?
+  module            SubjectModule? @relation(fields: [moduleId], references: [id])
   title             String
-  chapterTitle      String?
   summary           String?
   // 考试价值层
-  estimatedScoreMin Float?   // 最低贡献分
-  estimatedScoreMax Float?   // 最高贡献分
-  hitRate           Float?   // 出现概率 0~1
-  avgStudyMinutes   Int?     // 从0到能做题，大概多久
-  roiScore          Float?   // 提分性价比 = (分值×概率×薄弱度)/耗时
-  targetTier        String?  // pass | 75 | 85 | all
-  importanceTier    String?  // must | important | optional | skip
+  estimatedScoreMin Float?
+  estimatedScoreMax Float?
+  hitRate           Float?       // 出现概率 0~1
+  avgStudyMinutes   Int?         // 学习耗时
+  roiScore          Float?       // 提分性价比
+  targetTier        String?      // pass | 75 | 85 | all
+  importanceTier    String?      // must | important | optional | skip
   // 内容层
   formulas          Json?
-  commonPatterns    Json?
+  commonPatterns    Json?        // 高频题型
   solvingTemplate   Json?
   traps             Json?
   sourceEvidence    Json?
   // 掌握状态
-  masteryStatus     String   @default("unknown")
-  confidenceScore   Int      @default(0)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  masteryStatus     String       @default("unknown")
+  confidenceScore   Int          @default(0)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 
-  practiceQuestions   PracticeQuestion[]
-  studyTasks          StudyTask[]
-  materialMaps        MaterialExamPointMap[]
+  practiceQuestions PracticeQuestion[]
+  studyTasks        StudyTask[]
+  materialMaps      MaterialExamPointMap[]
 }
 
 model ExamScope {
   id               String   @id @default(uuid())
   projectId        String   @unique
   project          Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  sourceType       String   // user_material | manual_input | ai_inferred | hybrid
+  sourceType       String   // user_material | manual_input | ai_inferred | hybrid | default_pack
   title            String
   chapterTree      Json     // [{chapter, topics[], weight}]
-  overallCoverage  Float?   // 总覆盖度 0~1
+  overallCoverage  Float?   // 0~1
   pointCoverageMap Json?    // [{pointId, covered, sourceMaterialIds[], confidence}]
   createdAt        DateTime @default(now())
+}
+
+// ========== 学习资料 ==========
+
+model Material {
+  id               String    @id @default(uuid())
+  projectId        String
+  project          Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title            String
+  resourceType     String    @default("pdf") // pdf | ppt | image | past_exam | notes | video_link | text
+  sourceUrl        String?
+  storagePath      String?
+  rawText          String?
+  parseStatus      String    @default("pending") // pending | parsing | success | failed
+  extractedText    String?
+  extractionJson   Json?
+  sourceMeta       Json?     // {platform, url, duration, author}
+  parsedTranscript Json?
+  compressedNotes  Json?     // CrashSummary
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  examPointMaps    MaterialExamPointMap[]
+  parseJobs        AiTask[]
 }
 
 model MaterialExamPointMap {
@@ -112,80 +147,48 @@ model MaterialExamPointMap {
   material    Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
   examPointId String
   examPoint   ExamPoint @relation(fields: [examPointId], references: [id], onDelete: Cascade)
-  confidence  Float?   // 该考点来自这份资料的置信度
-  sourceChunk String?  // 来自资料的哪一段
+  confidence  Float?
+  sourceChunk String?
   createdAt   DateTime @default(now())
 
   @@unique([materialId, examPointId])
 }
 
-model DiagnosticRun {
-  id               String   @id @default(uuid())
-  projectId        String
-  project          Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  status           String   @default("generated") // generated | submitted | graded
-  totalQuestions   Int
-  correctCount     Int
-  predictedMin     Int?
-  predictedMax     Int?
-  paperSnapshot    Json     // 本次诊断卷完整题目快照
-  answerSnapshot   Json?    // 用户答案快照
-  gradingSnapshot  Json?    // 逐题评分明细
-  weakOpportunities Json?   // 本次生成的机会点列表
-  riskReport       Json?    // 风险报告
-  createdAt        DateTime @default(now())
-}
-
-model SprintPlan {
-  id              String   @id @default(uuid())
-  projectId       String   @unique
-  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  targetTier      String   // pass | 75 | 85
-  totalDays        Int
-  status          String   @default("active")
-  strategySummary Json?    // 策略摘要（文字描述+关键数据）
-  startScore      Int?     // 初始诊断估分
-  targetScore     Int
-  latestPredScore Int?     // 最新预测分
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  tasks           StudyTask[]
-}
-
-model StudyTask {
-  id               String   @id @default(uuid())
-  projectId        String
-  planId           String
-  plan             SprintPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
-  examPointId      String?
-  examPoint        ExamPoint? @relation(fields: [examPointId], references: [id])
-  date             DateTime
-  title            String
-  taskType         String    // learn | practice | review | mock
-  priority         Int       @default(3) // 1-5
-  estimatedMinutes Int       // 预计耗时
-  expectedGain     Float?    // 预计提分
-  status           String    @default("todo") // todo | doing | done | skipped
-  sourceReason     String?   // weak_point | high_roi | exam_hotspot | error_retry | coverage_gap
-  planVersion      Int       @default(1)  // 计划版本号
-  isLocked         Boolean   @default(false) // 锁定后重算不会改动
-  completedAt      DateTime?
-  createdAt        DateTime @default(now())
-}
+// ========== 题目系统 ==========
 
 model PracticeQuestion {
   id          String    @id @default(uuid())
   projectId   String
   examPointId String
   examPoint   ExamPoint @relation(fields: [examPointId], references: [id], onDelete: Cascade)
-  type        String
-  difficulty  Int
-  source      String
+  type        String    // single | multi | fill | short_answer | calculation
+  difficulty  Int       // 1-5
+  source      String    // generated | uploaded | past_exam
   stem        String
   options     Json?
   answer      Json
   explanation Json?
+  scoreValue  Int       @default(5)
+  createdAt   DateTime  @default(now())
+
+  attempts       QuestionAttempt[]
+  wrongQuestions WrongQuestion[]
+}
+
+model QuestionAttempt {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  projectId   String
+  questionId  String
+  question    PracticeQuestion @relation(fields: [questionId], references: [id])
+  sessionId   String?
+  session     PracticeSession? @relation(fields: [sessionId], references: [id])
+  userAnswer  Json
+  isCorrect   Boolean
+  errorType   String?   // concept | formula | careless | no_idea | half_understood
+  aiFeedback  String?
+  wrongQuestion WrongQuestion?
   createdAt   DateTime  @default(now())
 }
 
@@ -193,20 +196,112 @@ model PracticeSession {
   id             String   @id @default(uuid())
   projectId      String
   project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  mode           String
-  status         String   @default("completed")
+  mode           String   // diagnostic | point_practice | daily_plan | mock_exam
+  status         String   @default("in_progress")
   totalQuestions Int
   correctCount   Int?
   resultJson     Json?
+  startedAt      DateTime @default(now())
+  endedAt        DateTime?
   createdAt      DateTime @default(now())
+
+  attempts QuestionAttempt[]
 }
+
+// ========== 诊断系统 ==========
+
+model DiagnosticRun {
+  id                String   @id @default(uuid())
+  projectId         String
+  project           Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title             String   @default("摸底诊断")
+  status            String   @default("generated") // generated | submitted | graded
+  generatedFrom     String   @default("generic_subject_based") // resource_based | generic_subject_based
+  totalQuestions    Int
+  correctCount      Int
+  predictedMin      Int?
+  predictedMax      Int?
+  paperSnapshot     Json
+  answerSnapshot    Json?
+  gradingSnapshot   Json?
+  weakOpportunities Json?
+  riskReport        Json?
+  createdAt         DateTime @default(now())
+}
+
+// ========== 提分计划 ==========
+
+model SprintPlan {
+  id              String   @id @default(uuid())
+  projectId       String   @unique
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version         Int      @default(1)
+  planType        String   @default("pass_60") // pass_60 | target_70 | target_80 | sprint
+  targetTier      String   // pass | 75 | 85
+  totalDays       Int
+  dailyMinutes    Int
+  status          String   @default("active")
+  strategySummary Json?
+  startScore      Int?
+  targetScore     Int
+  latestPredScore Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tasks StudyTask[]
+}
+
+model StudyTask {
+  id               String    @id @default(uuid())
+  projectId        String
+  planId           String
+  plan             SprintPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  examPointId      String?
+  examPoint        ExamPoint? @relation(fields: [examPointId], references: [id])
+  moduleId         String?
+  dayIndex         Int        @default(1)
+  title            String
+  taskType         String     // learn | practice | review | mock_exam | memorize
+  priority         Int        @default(3)
+  estimatedMinutes Int
+  expectedGain     Float?
+  status           String     @default("todo") // todo | doing | done | skipped
+  sourceReason     String?
+  planVersion      Int        @default(1)
+  isLocked         Boolean    @default(false)
+  completedAt      DateTime?
+  createdAt        DateTime   @default(now())
+}
+
+// ========== 错题本 ==========
+
+model WrongQuestion {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  projectId       String
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  questionId      String
+  question        PracticeQuestion @relation(fields: [questionId], references: [id])
+  attemptId       String    @unique
+  attempt         QuestionAttempt @relation(fields: [attemptId], references: [id])
+  errorReason     String?   // concept | formula | careless | no_idea
+  recommendedAction String? // 建议动作
+  status          String    @default("active") // active | resolved
+  resolvedAt      DateTime?
+  createdAt       DateTime  @default(now())
+}
+
+// ========== AI 异步任务 ==========
 
 model AiTask {
   id              String   @id @default(uuid())
   projectId       String
   project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  type            String   // material_extract | material_compress | exam_point_extract | diagnostic_generate | diagnostic_grade | sprint_plan_generate | risk_report_generate
-  idempotencyKey  String?  // 幂等键：防止重复提交
+  materialId      String?
+  material        Material? @relation(fields: [materialId], references: [id])
+  type            String   // material_parse | material_compress | exam_point_extract | diagnostic_generate | diagnostic_grade | sprint_plan_generate | risk_report_generate
+  idempotencyKey  String?
   status          String   @default("pending") // pending | running | success | failed
   inputJson       Json?
   outputJson      Json?

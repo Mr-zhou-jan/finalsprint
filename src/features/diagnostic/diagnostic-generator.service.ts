@@ -10,7 +10,7 @@ export async function generateDiagnosticPaper(projectId: string) {
   if (points.length === 0) {
     const pack = getDefaultPack(project.subjectName)
     if (pack) {
-      await db.examPoint.createMany({ data: pack.points.map(p => ({ projectId, title: p.title, chapterTitle: p.chapterTitle, estimatedScoreMin: p.estimatedScoreMin, estimatedScoreMax: p.estimatedScoreMax, hitRate: p.hitRate, avgStudyMinutes: p.avgStudyMinutes, targetTier: p.targetTier, importanceTier: p.importanceTier, sourceEvidence: { source: "default_pack", disclaimer: pack.disclaimer } })) })
+      await db.examPoint.createMany({ data: pack.points.map(p => ({ projectId, title: p.title, estimatedScoreMin: p.estimatedScoreMin, estimatedScoreMax: p.estimatedScoreMax, hitRate: p.hitRate, avgStudyMinutes: p.avgStudyMinutes, targetTier: p.targetTier, importanceTier: p.importanceTier, sourceEvidence: { source: "default_pack", disclaimer: pack.disclaimer } })) })
       await db.examScope.upsert({ where: { projectId }, create: { projectId, sourceType: "default_pack", title: `${project.subjectName} 通用考纲`, overallCoverage: 0.5, chapterTree: [] }, update: { sourceType: "default_pack" } })
       points = await db.examPoint.findMany({ where: { projectId } })
     }
@@ -18,7 +18,7 @@ export async function generateDiagnosticPaper(projectId: string) {
 
   const candidates = points.filter(p => p.importanceTier === "must" || p.importanceTier === "important").slice(0, 15)
   const questions = candidates.map((ep, i) => ({
-    type: "choice", difficulty: 2,
+    type: "single", difficulty: 2,
     stem: `【${ep.title}】以下关于该考点的说法正确的是？`,
     options: ["A", "B", "C", "D"],
     answer: { correctIndex: 0 },

@@ -14,7 +14,7 @@ export async function buildDiagnosticReport(projectId: string, diagnosticId: str
   const gradingDetails = questions.map((q: any, i: number) => {
     const userA = userAnswers[String(i)] || ""
     let correct = false
-    if (q.type === "choice") correct = Number(userA) === q.answer?.correctIndex
+    if (q.type === "single") correct = Number(userA) === q.answer?.correctIndex
     else correct = String(userA).trim().toLowerCase() === String(q.answer?.value || "").trim().toLowerCase()
     if (correct) correctCount++
     return { questionIndex: i, correct, userAnswer: userA, examPointTitle: q.examPointTitle }

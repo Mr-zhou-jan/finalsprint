@@ -48,7 +48,7 @@ export default function DiagnosticTakePage() {
       <div className="card-glass p-6 mb-4">
         <p className="text-xs text-zinc-400 mb-1">{q.examPointTitle}</p>
         <p className="font-bold text-lg mb-4">{q.stem}</p>
-        {q.type === "choice" && <div className="space-y-2">{(q.options || []).map((opt: string, i: number) => {
+        {q.type === "single" && <div className="space-y-2">{(q.options || []).map((opt: string, i: number) => {
           const sel = answers[String(currentIdx)] === String(i)
           return <button key={i} onClick={() => setAnswers(a => ({ ...a, [String(currentIdx)]: String(i) }))} className={`w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${sel ? "border-orange-400 bg-orange-50" : "border-zinc-100 hover:border-zinc-300"}`}>{String.fromCharCode(65 + i)}. {opt}</button>
         })}</div>}

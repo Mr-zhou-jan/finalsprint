@@ -29,8 +29,8 @@ export async function generateSprintPlan(projectId: string, targetTier: "pass" |
 
   const existingPlan = await db.sprintPlan.findUnique({ where: { projectId } })
   const plan = existingPlan
-    ? await db.sprintPlan.update({ where: { projectId }, data: { targetTier, totalDays: daysLeft, strategySummary: { text: allocResult.strategySummary, abandonAdvice: allocResult.abandonAdvice }, latestPredScore: probResult.predictedIfOnTrack } })
-    : await db.sprintPlan.create({ data: { projectId, targetTier, totalDays: daysLeft, strategySummary: { text: allocResult.strategySummary, abandonAdvice: allocResult.abandonAdvice }, startScore: diagnostic?.predictedMin ?? 30, targetScore: project.targetScore, latestPredScore: probResult.predictedIfOnTrack } })
+    ? await db.sprintPlan.update({ where: { projectId }, data: { targetTier, totalDays: daysLeft, dailyMinutes: project.dailyMinutes, strategySummary: { text: allocResult.strategySummary, abandonAdvice: allocResult.abandonAdvice }, latestPredScore: probResult.predictedIfOnTrack } })
+    : await db.sprintPlan.create({ data: { projectId, targetTier, planType: targetTier === "pass" ? "pass_60" : targetTier === "75" ? "target_70" : "target_80", totalDays: daysLeft, dailyMinutes: project.dailyMinutes, strategySummary: { text: allocResult.strategySummary, abandonAdvice: allocResult.abandonAdvice }, startScore: diagnostic?.predictedMin ?? 30, targetScore: project.targetScore, latestPredScore: probResult.predictedIfOnTrack } })
 
   if (!existingPlan) {
     await db.studyTask.createMany({ data: allocResult.tasks.map(t => ({ projectId, planId: plan.id, examPointId: t.examPointId || null, date: new Date(t.date), title: t.title, taskType: t.taskType, priority: t.priority, estimatedMinutes: t.estimatedMinutes, expectedGain: t.expectedGain, sourceReason: t.sourceReason })) })
