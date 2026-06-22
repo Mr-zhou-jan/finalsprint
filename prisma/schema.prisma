@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         String    @id @default(uuid())
+  email      String    @unique
+  name       String?
+  avatarUrl  String?
+  quotaUsed  Int       @default(0)
+  quotaLimit Int       @default(300)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  projects   Project[]
+}
+
+model Project {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  subjectName   String
+  examDate      DateTime
+  targetScore   Int
+  currentLevel  String
+  dailyMinutes  Int
+  status        String   @default("active")
+  predictedMin  Int?
+  predictedMax  Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  materials         Material[]
+  examPoints        ExamPoint[]
+  diagnosticRuns    DiagnosticRun[]
+  sprintPlans       SprintPlan[]
+  practiceSessions  PracticeSession[]
+  aiTasks           AiTask[]
+}
+
+model Material {
+  id             String    @id @default(uuid())
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title          String
+  type           String
+  fileUrl        String?
+  rawText        String?
+  status         String    @default("pending")
+  extractedText  String?
+  extractionJson Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model ExamPoint {
+  id               String   @id @default(uuid())
+  projectId        String
+  project          Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title            String
+  chapterTitle     String?
+  summary          String?
+  examProbability  Float?
+  estimatedScore   Float?
+  studyCostMinutes Int?
+  roiScore         Float?
+  targetTier       String?
+  importanceLevel  Int?
+  formulas         Json?
+  commonPatterns   Json?
+  solvingTemplate  Json?
+  traps            Json?
+  sourceEvidence   Json?
+  masteryStatus    String   @default("unknown")
+  confidenceScore  Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  practiceQuestions PracticeQuestion[]
+}
+
+model DiagnosticRun {
+  id             String   @id @default(uuid())
+  projectId      String
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status         String   @default("completed")
+  totalQuestions Int
+  correctCount   Int
+  predictedMin   Int?
+  predictedMax   Int?
+  reportJson     Json
+  createdAt      DateTime @default(now())
+}
+
+model SprintPlan {
+  id         String   @id @default(uuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  targetTier String
+  totalDays  Int
+  status     String   @default("active")
+  planJson   Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model PracticeQuestion {
+  id          String    @id @default(uuid())
+  projectId   String
+  examPointId String
+  examPoint   ExamPoint @relation(fields: [examPointId], references: [id], onDelete: Cascade)
+  type        String
+  difficulty  Int
+  source      String
+  stem        String
+  options     Json?
+  answer      Json
+  explanation Json?
+  createdAt   DateTime  @default(now())
+}
+
+model PracticeSession {
+  id             String   @id @default(uuid())
+  projectId      String
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  mode           String
+  status         String   @default("completed")
+  totalQuestions Int
+  correctCount   Int?
+  resultJson     Json?
+  createdAt      DateTime @default(now())
+}
+
+model AiTask {
+  id           String   @id @default(uuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type         String
+  status       String   @default("pending")
+  inputJson    Json?
+  outputJson   Json?
+  errorMessage String?
+  retryCount   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
