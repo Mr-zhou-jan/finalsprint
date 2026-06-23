@@ -24,10 +24,10 @@ export default function ProjectOverviewPage() {
 
   const daysLeft = Math.max(0, Math.ceil((new Date(project.examDate).getTime() - Date.now()) / 86400000))
   const gap = project.predictedMin ? project.targetScore - (project.predictedMax || project.predictedMin) : null
-  const hasMaterials = project.materials?.length > 0
-  const hasExamPoints = project.examPoints?.length > 0
-  const hasDiagnostic = project.diagnosticRuns?.length > 0
-  const hasPlan = project.sprintPlan?.length > 0
+  const hasMaterials = (project.materials || project.Material || []).length > 0
+  const hasExamPoints = (project.examPoints || project.ExamPoint || []).length > 0
+  const hasDiagnostic = (project.diagnosticRuns || project.DiagnosticRun || []).length > 0
+  const hasPlan = (project.sprintPlan || project.SprintPlan || []).length > 0
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
@@ -54,7 +54,7 @@ export default function ProjectOverviewPage() {
         </Card>
         <Card className={hasDiagnostic ? "border-emerald-200 bg-emerald-50/50" : hasExamPoints ? "border-orange-300 bg-orange-50/50 border-2" : "opacity-50"}>
           <CardHeader><CardTitle className="flex items-center gap-2 text-base"><Target className="w-5 h-5" />{hasDiagnostic ? "✓ 已诊断" : "Step 3: 水平诊断"}</CardTitle><CardDescription>{hasDiagnostic ? `估分 ${project.predictedMin}~${project.predictedMax}` : "10-20 题判断当前水平"}</CardDescription></CardHeader>
-          <CardContent>{hasDiagnostic ? <Link href={`/projects/${projectId}/diagnostic/report`}><Button variant="outline" size="sm" className="w-full">查看报告</Button></Link> : <Button size="sm" className="w-full" disabled={!hasExamPoints} onClick={() => router.push(`/projects/${projectId}/diagnostic/start`)}>开始诊断</Button>}</CardContent>
+          <CardContent>{hasDiagnostic ? <Link href={`/projects/${projectId}/diagnostic/report`}><Button variant="outline" size="sm" className="w-full">查看报告</Button></Link> : <Button size="sm" className="w-full" disabled={!hasExamPoints} onClick={() => router.push(`/projects/${projectId}/diagnostic/take`)}>开始诊断</Button>}</CardContent>
         </Card>
         <Card className={hasPlan ? "border-emerald-200 bg-emerald-50/50" : hasDiagnostic ? "border-orange-300 bg-orange-50/50 border-2" : "opacity-50"}>
           <CardHeader><CardTitle className="flex items-center gap-2 text-base"><BookOpen className="w-5 h-5" />{hasPlan ? "✓ 计划已生成" : "Step 4: 冲刺计划"}</CardTitle><CardDescription>{hasPlan ? "每日作战任务已部署" : "AI 生成每日提分计划"}</CardDescription></CardHeader>
@@ -65,7 +65,7 @@ export default function ProjectOverviewPage() {
       {hasExamPoints && <div className="grid grid-cols-3 gap-3">
         <Link href={`/projects/${projectId}/points`}><Button variant="outline" className="w-full gap-2"><Zap className="w-4 h-4" />考点列表</Button></Link>
         <Link href={`/projects/${projectId}/practice`}><Button variant="outline" className="w-full gap-2"><Target className="w-4 h-4" />刷题练习</Button></Link>
-        <Link href={`/projects/${projectId}/review`}><Button variant="outline" className="w-full gap-2"><AlertTriangle className="w-4 h-4" />错题复盘</Button></Link>
+        <Link href={`/projects/${projectId}/errors`}><Button variant="outline" className="w-full gap-2"><AlertTriangle className="w-4 h-4" />错题复盘</Button></Link>
       </div>}
     </div>
   )

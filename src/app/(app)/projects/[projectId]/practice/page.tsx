@@ -21,13 +21,10 @@ function PracticeInner() {
 
   const handleStart = async () => {
     setLoading(true)
-    const dRes = await fetch(`/api/projects/${projectId}/dashboard`); const dash = await dRes.json()
-    const pid = dash.topOpportunities?.[0]?.examPointId
-    if (!pid) { setLoading(false); return }
-    const res = await fetch(`/api/projects/${projectId}/practice/generate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ examPointId: pid, count: 5 }) })
+    const res = await fetch(`/api/projects/${projectId}/practice/generate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ count: 5 }) })
     const data = await res.json()
     setQuestions(data.questions || []); setAnswers({}); setResults(null); setCurrentIdx(0); setScore(null); setLoading(false)
-    router.replace(`/projects/${projectId}/practice?sessionId=${data.sessionId}`)
+    if (data.sessionId) router.replace(`/projects/${projectId}/practice?sessionId=${data.sessionId}`)
   }
 
   const handleSubmit = async () => {

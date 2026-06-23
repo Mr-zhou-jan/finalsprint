@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerSupabase } from "@/lib/supabase/server"
-import { db } from "@/lib/db"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const supabase = await createServerSupabase()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "未登录" }, { status: 401 })
   const { id } = await params
-  const plan = await db.sprintPlan.findUnique({ where: { projectId: id }, include: { tasks: { where: { status: { in: ["todo", "doing"] } }, orderBy: { priority: "asc" } } } })
-  if (!plan) return NextResponse.json({ tasks: [], message: "尚未生成冲刺计划" })
-  const todayTasks = plan.tasks.slice(0, 10)
-  const totalMins = todayTasks.reduce((s, t) => s + t.estimatedMinutes, 0)
-  const totalGain = todayTasks.reduce((s, t) => s + (t.expectedGain || 0), 0)
-  const project = await db.project.findUnique({ where: { id } })
-  return NextResponse.json({ tasks: todayTasks, totalEstimatedMinutes: totalMins, totalExpectedGain: Math.round(totalGain), predictedAfterToday: (project?.predictedMax ?? 0) + Math.round(totalGain * 0.3) })
+  const { data: plans } = await supabase.from("SprintPlan").select("id").eq("projectId", id).limit(1)
+  if (!plans?.length) return NextResponse.json({ tasks: [], message: "尚未生成冲刺计划" })
+  const { data: tasks } = await supabase.from("StudyTask").select("*").eq("projectId", id).in("status", ["todo","doing"]).order("priority", { ascending: true }).limit(10)
+  const list = tasks || []
+  const m = list.reduce((s:number,t:any)=>s+(t.estimatedMinutes||0),0)
+  const g = list.reduce((s:number,t:any)=>s+(t.expectedGain||0),0)
+  const { data: p } = await supabase.from("Project").select("predictedMax").eq("id", id).single()
+  return NextResponse.json({ tasks: list, totalEstimatedMinutes: m, totalExpectedGain: Math.round(g), predictedAfterToday: (p?.predictedMax||0)+Math.round(g*.3) })
 }

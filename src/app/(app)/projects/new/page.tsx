@@ -16,13 +16,17 @@ export default function NewProjectPage() {
     dailyMinutes: 60,
   })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true)
-    const res = await fetch("/api/projects", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) })
-    const data = await res.json()
-    if (data.error) { setLoading(false); return }
-    router.push(`/projects/${data.id}/overview`)
+    e.preventDefault(); setError(""); setLoading(true)
+    try {
+      const res = await fetch("/api/projects", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) })
+      const data = await res.json()
+      if (!res.ok || data.error) { setError(data.error || `HTTP ${res.status}`); setLoading(false); return }
+      if (data.id) { router.push(`/projects/${data.id}/overview`); return }
+      setError("创建成功但缺少项目ID"); setLoading(false)
+    } catch { setError("网络错误"); setLoading(false) }
   }
 
   return (
@@ -35,6 +39,7 @@ export default function NewProjectPage() {
           <CardDescription>设定你的期末冲刺目标</CardDescription>
         </CardHeader>
         <CardContent>
+          {error && <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl text-sm text-red-600">{error}</div>}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div><Label>科目名称</Label><Input value={form.subjectName} onChange={e => setForm(f => ({ ...f, subjectName: e.target.value }))} placeholder="如：高等数学、大学物理" required /></div>
             <div><Label>考试日期</Label><Input type="date" value={form.examDate} onChange={e => setForm(f => ({ ...f, examDate: e.target.value }))} required /></div>
