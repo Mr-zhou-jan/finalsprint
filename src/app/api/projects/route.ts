@@ -16,6 +16,11 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const { subjectName, examDate, targetScore, currentLevel, dailyMinutes } = body
   if (!subjectName || !examDate || !targetScore) return NextResponse.json({ error: "缺少必填字段" }, { status: 400 })
+  // 安全兜底：确保 public.User 存在（触发器遗漏时补齐）
+  await supabase.from("User").upsert({
+    id: user.id, email: user.email, name: user.user_metadata?.name || user.email
+  }, { onConflict: "id" })
+
   const { data: project, error } = await supabase.from("Project").insert({
     userId: user.id, subjectName, examDate, targetScore, currentLevel: currentLevel || "weak", dailyMinutes: dailyMinutes || 60
   }).select("id").single()

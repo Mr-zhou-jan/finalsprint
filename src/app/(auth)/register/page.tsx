@@ -21,8 +21,12 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault(); setError(""); setLoading(true)
     if (password.length < 6) { setError("密码至少 6 位"); setLoading(false); return }
-    const { error: err } = await supabase.auth.signUp({ email, password, options: { data: { name } } })
+    const { data: signUpData, error: err } = await supabase.auth.signUp({ email, password, options: { data: { name } } })
     if (err) { setError(err.message); setLoading(false); return }
+    // 同步写入 public.User（防止触发器遗漏导致 Project 创建报外键错误）
+    if (signUpData.user) {
+      await supabase.from("User").upsert({ id: signUpData.user.id, email, name }, { onConflict: "id" })
+    }
     router.push("/projects"); router.refresh()
   }
 

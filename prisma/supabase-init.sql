@@ -32,3 +32,19 @@ CREATE TABLE IF NOT EXISTS "SprintPlan" ("id" TEXT PRIMARY KEY DEFAULT gen_rando
 CREATE TABLE IF NOT EXISTS "StudyTask" ("id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text, "projectId" TEXT NOT NULL, "planId" TEXT NOT NULL REFERENCES "SprintPlan"("id") ON DELETE CASCADE, "examPointId" TEXT REFERENCES "ExamPoint"("id"), "moduleId" TEXT, "dayIndex" INTEGER DEFAULT 1, "title" TEXT NOT NULL, "taskType" TEXT NOT NULL DEFAULT 'learn', "priority" INTEGER DEFAULT 3, "estimatedMinutes" INTEGER NOT NULL, "expectedGain" DOUBLE PRECISION, "status" TEXT DEFAULT 'todo', "sourceReason" TEXT, "planVersion" INTEGER DEFAULT 1, "isLocked" BOOLEAN DEFAULT false, "completedAt" TIMESTAMP(3), "createdAt" TIMESTAMP(3) DEFAULT NOW());
 
 CREATE TABLE IF NOT EXISTS "AiTask" ("id" TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text, "projectId" TEXT NOT NULL REFERENCES "Project"("id") ON DELETE CASCADE, "materialId" TEXT REFERENCES "Material"("id"), "type" TEXT NOT NULL, "idempotencyKey" TEXT, "status" TEXT DEFAULT 'pending', "inputJson" JSONB, "outputJson" JSONB, "errorMessage" TEXT, "retryCount" INTEGER DEFAULT 0, "createdAt" TIMESTAMP(3) DEFAULT NOW(), "updatedAt" TIMESTAMP(3) DEFAULT NOW());
+
+-- ====== 触发器：新用户注册自动同步到 public.User ======
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public."User" (id, email, name)
+  VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'name')
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
