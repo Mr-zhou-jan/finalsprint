@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/english/layout,_N_T_/english/real-exams/layout,_N_T_/english/real-exams/page,_N_T_/english/real-exams"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/english/real-exams/__PAGE__",
+    "/english/real-exams",
+    "/english",
+    "/_index",
+    "/_head"
+  ]
+}

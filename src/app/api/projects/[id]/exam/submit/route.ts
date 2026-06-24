@@ -40,5 +40,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const pMin = Math.max(0, pct - 10), pMax = Math.min(100, pct + 5)
   await supabase.from("PracticeSession").update({ correctCount: c, status: "completed", endedAt: new Date().toISOString(), resultJson: { scorePercent: pct, totalScore: ts, earnedScore: es } }).eq("id", sessionId)
   if (pMin || pMax) await supabase.from("Project").update({ predictedMin: pMin, predictedMax: pMax }).eq("id", pid)
-  return NextResponse.json({ correctCount: c, totalQuestions: Object.keys(answers).length, totalScore: ts, earnedScore: es, scorePercent: pct, predictedMin: pMin, predictedMax: pMax, sprintAdvice: {} })
+  return NextResponse.json({
+    correctCount: c, totalQuestions: Object.keys(answers).length, totalScore: ts, earnedScore: es, scorePercent: pct, predictedMin: pMin, predictedMax: pMax,
+    sprintAdvice: { top3ReviewPoints: [], examStrategy: { timeAllocation: "先做会的题，不会的标记后跳过，最后集中攻克" } }
+  })
 }

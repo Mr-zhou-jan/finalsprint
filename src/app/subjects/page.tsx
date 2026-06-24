@@ -4,6 +4,16 @@ import { useRouter } from "next/navigation"
 import { BookOpen, CheckCircle2, Zap, ChevronRight, Sparkles } from "lucide-react"
 
 const SUBJECT_CHAPTERS: Record<string, { name: string; desc: string }[]> = {
+  "大学英语": [
+    { name: "阅读理解", desc: "仔细阅读 · 主旨推理 · 细节定位" },
+    { name: "听力训练", desc: "短篇新闻 · 长对话 · 短文理解" },
+    { name: "作文批改", desc: "议论文 · 书信 · 图表作文" },
+    { name: "翻译训练", desc: "文化类 · 经济类 · 社会类" },
+    { name: "段落匹配", desc: "关键词定位 · 同义替换 · 主旨匹配" },
+    { name: "选词填空", desc: "15选10 · 词汇辨析 · 上下文线索" },
+    { name: "词汇语法", desc: "CET-4/6 核心词汇 · 语法专项" },
+    { name: "整卷练习", desc: "真题模拟 · 限时训练 · 智能评分" },
+  ],
   "高等数学": [
     { name: "函数与极限", desc: "两个重要极限·等价无穷小·洛必达" },
     { name: "导数与微分", desc: "求导法则·隐函数·高阶导数" },
@@ -67,7 +77,7 @@ export default function SubjectsListPage() {
           const doneCount = chapters.filter(ch => (progress[`${name}:${ch.name}`] || 0) >= 80).length
           const totalCount = chapters.length
           return (
-            <button key={name} onClick={() => router.push(`/subjects/${encodeURIComponent(name)}`)}
+            <button key={name} onClick={() => router.push(name === "大学英语" ? "/english" : `/subjects/${encodeURIComponent(name)}`)}
               className="w-full text-left card-hover p-5">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center shrink-0">

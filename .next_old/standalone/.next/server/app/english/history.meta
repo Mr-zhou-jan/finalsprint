@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/english/layout,_N_T_/english/history/layout,_N_T_/english/history/page,_N_T_/english/history"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/english/history/__PAGE__",
+    "/english/history",
+    "/english",
+    "/_index",
+    "/_head"
+  ]
+}

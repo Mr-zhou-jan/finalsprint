@@ -6,7 +6,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-50 via-white to-orange-50">
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
-        <div className="flex items-center gap-2"><div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center"><Zap className="w-5 h-5 text-white" /></div><span className="font-bold text-xl">FinalSprint</span></div>
+        <div className="flex items-center gap-2"><div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center"><Zap className="w-5 h-5 text-white" /></div><span className="font-bold text-xl">LearnOS</span></div>
         <div className="flex items-center gap-3"><Link href="/login"><Button variant="ghost">登录</Button></Link><Link href="/register"><Button>免费开始</Button></Link></div>
       </header>
       <main className="max-w-5xl mx-auto px-6 py-20 text-center">

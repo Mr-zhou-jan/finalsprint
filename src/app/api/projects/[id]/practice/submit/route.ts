@@ -35,6 +35,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   const t = Math.max((qs || []).length || Object.keys(answers).length, 1)
+
+  // 构建 results 数组：复用评分逻辑计算每道题正确与否
+  const results = Object.entries(answers).map(([qid, ua]) => {
+    let ok = false
+    if (qs && qs.length > 0) {
+      const q = qs.find((x: any) => x.id === qid)
+      if (q) ok = q.type === "single" ? Number(ua) === (q.answer as any)?.correctIndex : String(ua).trim() === String((q.answer as any)?.value || "").trim()
+    } else {
+      const ans = PRESET_ANSWERS[qid] || { correctIndex: 0 }
+      ok = ans.correctIndex !== undefined ? Number(ua) === ans.correctIndex : String(ua).trim() === String(ans.value || "").trim()
+    }
+    return { questionId: qid, userAnswer: { value: ua }, isCorrect: ok }
+  })
+
   await supabase.from("PracticeSession").update({ correctCount: c, status: "completed", endedAt: new Date().toISOString() }).eq("id", sessionId)
-  return NextResponse.json({ sessionId, correctCount: c, totalQuestions: t, accuracy: Math.round((c / t) * 100), results: Object.entries(answers).map(([qid, ua]) => ({ questionId: qid, userAnswer: { value: ua }, isCorrect: false })) })
+  return NextResponse.json({ sessionId, correctCount: c, totalQuestions: t, accuracy: Math.round((c / t) * 100), results })
 }

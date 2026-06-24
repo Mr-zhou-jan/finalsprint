@@ -6,18 +6,19 @@ redirectsOrigin = "inline"
 [functions."*"]
 
 [[plugins]]
-origin = "default"
+origin = "config"
 package = "@netlify/plugin-nextjs"
 
 [plugins.inputs]
 
 [build]
 publish = "D:\\claude code产品\\finalsprint\\.next"
-publishOrigin = "ui"
-commandOrigin = "ui"
-command = "npm run build"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "next build"
 
 [build.environment]
+NODE_VERSION = "22"
 
 [build.processing]
 

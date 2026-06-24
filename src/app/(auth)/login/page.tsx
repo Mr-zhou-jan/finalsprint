@@ -29,7 +29,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center mb-3"><Zap className="w-6 h-6 text-white" /></div>
-          <CardTitle className="text-2xl">登录 FinalSprint</CardTitle>
+          <CardTitle className="text-2xl">登录 LearnOS</CardTitle>
           <CardDescription>AI 驱动的期末冲刺系统</CardDescription>
         </CardHeader>
         <CardContent>

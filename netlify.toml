@@ -1,0 +1,16 @@
+[[redirects]]
+  from = "https://learnOS.site/*"
+  to = "/:splat"
+  status = 200
+  force = true
+
+[build]
+  command = "next build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Netlify Next.js Runtime — 自动处理 SSR/ISR/API 路由
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
