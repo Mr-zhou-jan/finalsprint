@@ -1,3 +1,3 @@
-module.exports=[27572,a=>{"use strict";var b=a.i(7997);a.s(["default",0,function({children:a}){return(0,b.jsx)("html",{lang:"zh-CN",className:"h-full antialiased",children:(0,b.jsx)("body",{className:"min-h-full flex flex-col bg-zinc-50",children:a})})},"metadata",0,{title:"FinalSprint - AI 期末提分系统",description:"上传资料 → AI 提取考点 → 诊断 → 最短提分路线"}])},50645,a=>{a.n(a.i(27572))}];
+module.exports=[27572,a=>{"use strict";var b=a.i(7997);let c={title:"LearnOS - AI 主动学习平台",description:"上传资料 → AI 提取考点 → 诊断 → 最短提分路线",metadataBase:new URL("https://learnOS.site")};a.s(["default",0,function({children:a}){return(0,b.jsx)("html",{lang:"zh-CN",className:"h-full antialiased",children:(0,b.jsx)("body",{className:"min-h-full flex flex-col bg-zinc-50",children:a})})},"metadata",0,c])},50645,a=>{a.n(a.i(27572))}];
 
 //# sourceMappingURL=src_app_layout_tsx_0r5yz5t._.js.map
