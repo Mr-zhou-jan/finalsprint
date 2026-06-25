@@ -13,6 +13,13 @@
   "/(app)/projects/[projectId]/practice/page": "app/(app)/projects/[projectId]/practice/page.js",
   "/(app)/projects/new/page": "app/(app)/projects/new/page.js",
   "/(app)/projects/page": "app/(app)/projects/page.js",
+  "/(app)/subjects/[subject]/[module]/page": "app/(app)/subjects/[subject]/[module]/page.js",
+  "/(app)/subjects/cpp/page": "app/(app)/subjects/cpp/page.js",
+  "/(app)/subjects/math/page": "app/(app)/subjects/math/page.js",
+  "/(app)/subjects/mechanics/page": "app/(app)/subjects/mechanics/page.js",
+  "/(app)/subjects/page": "app/(app)/subjects/page.js",
+  "/(app)/subjects/physics/page": "app/(app)/subjects/physics/page.js",
+  "/(app)/subjects/tolerance/page": "app/(app)/subjects/tolerance/page.js",
   "/(auth)/login/page": "app/(auth)/login/page.js",
   "/(auth)/register/page": "app/(auth)/register/page.js",
   "/_global-error/page": "app/_global-error/page.js",
@@ -63,8 +70,5 @@
   "/english/vocab/page": "app/english/vocab/page.js",
   "/english/writing/page": "app/english/writing/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js",
-  "/subjects/[subject]/[section]/page": "app/subjects/[subject]/[section]/page.js",
-  "/subjects/[subject]/page": "app/subjects/[subject]/page.js",
-  "/subjects/page": "app/subjects/page.js"
+  "/page": "app/page.js"
 }

@@ -27,10 +27,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { router.push("/login"); return }
+      // 学科页面无需登录即可访问
+      if (!user && !pathname.startsWith("/subjects")) { router.push("/login"); return }
       setUser(user); setLoading(false)
     })
-  }, [])
+  }, [pathname])
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" /></div>
 
@@ -50,11 +51,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <Link href="/subjects" className={cn("flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors", isActive("/subjects") ? "bg-orange-50 text-orange-700" : "text-zinc-600 hover:bg-zinc-100")}><BookOpen className="w-5 h-5" />学科速通</Link>
         </nav>
         <div className="border-t p-3">
-          <div className="flex items-center gap-3 px-2 py-1 mb-2">
-            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-sm font-bold text-orange-600">{user?.user_metadata?.name?.[0] || user?.email?.[0] || "U"}</div>
-            <div className="min-w-0 flex-1"><p className="text-sm font-semibold truncate">{user?.user_metadata?.name || "用户"}</p><p className="text-xs text-zinc-400 truncate">{user?.email}</p></div>
-          </div>
-          <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-zinc-500 hover:bg-red-50 hover:text-red-600 w-full transition-colors"><LogOut className="w-4 h-4" />退出</button>
+          {user ? (
+            <>
+              <div className="flex items-center gap-3 px-2 py-1 mb-2">
+                <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-sm font-bold text-orange-600">{user?.user_metadata?.name?.[0] || user?.email?.[0] || "U"}</div>
+                <div className="min-w-0 flex-1"><p className="text-sm font-semibold truncate">{user?.user_metadata?.name || "用户"}</p><p className="text-xs text-zinc-400 truncate">{user?.email}</p></div>
+              </div>
+              <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-zinc-500 hover:bg-red-50 hover:text-red-600 w-full transition-colors"><LogOut className="w-4 h-4" />退出</button>
+            </>
+          ) : (
+            <button onClick={() => router.push("/login")} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-orange-600 hover:bg-orange-50 w-full transition-colors font-medium">登录 / 注册</button>
+          )}
         </div>
       </aside>
       <main className="flex-1 overflow-auto">{children}</main>

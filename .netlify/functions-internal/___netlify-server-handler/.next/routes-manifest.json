@@ -267,21 +267,13 @@
       "namedRegex": "^/projects/(?<nxtPprojectId>[^/]+?)/practice(?:/)?$"
     },
     {
-      "page": "/subjects/[subject]",
-      "regex": "^/subjects/([^/]+?)(?:/)?$",
-      "routeKeys": {
-        "nxtPsubject": "nxtPsubject"
-      },
-      "namedRegex": "^/subjects/(?<nxtPsubject>[^/]+?)(?:/)?$"
-    },
-    {
-      "page": "/subjects/[subject]/[section]",
+      "page": "/subjects/[subject]/[module]",
       "regex": "^/subjects/([^/]+?)/([^/]+?)(?:/)?$",
       "routeKeys": {
         "nxtPsubject": "nxtPsubject",
-        "nxtPsection": "nxtPsection"
+        "nxtPmodule": "nxtPmodule"
       },
-      "namedRegex": "^/subjects/(?<nxtPsubject>[^/]+?)/(?<nxtPsection>[^/]+?)(?:/)?$"
+      "namedRegex": "^/subjects/(?<nxtPsubject>[^/]+?)/(?<nxtPmodule>[^/]+?)(?:/)?$"
     }
   ],
   "staticRoutes": [
@@ -500,6 +492,36 @@
       "regex": "^/subjects(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/subjects(?:/)?$"
+    },
+    {
+      "page": "/subjects/cpp",
+      "regex": "^/subjects/cpp(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/subjects/cpp(?:/)?$"
+    },
+    {
+      "page": "/subjects/math",
+      "regex": "^/subjects/math(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/subjects/math(?:/)?$"
+    },
+    {
+      "page": "/subjects/mechanics",
+      "regex": "^/subjects/mechanics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/subjects/mechanics(?:/)?$"
+    },
+    {
+      "page": "/subjects/physics",
+      "regex": "^/subjects/physics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/subjects/physics(?:/)?$"
+    },
+    {
+      "page": "/subjects/tolerance",
+      "regex": "^/subjects/tolerance(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/subjects/tolerance(?:/)?$"
     }
   ],
   "dataRoutes": [],

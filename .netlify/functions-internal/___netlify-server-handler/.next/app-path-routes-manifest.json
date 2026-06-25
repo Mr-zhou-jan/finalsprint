@@ -13,6 +13,13 @@
   "/(app)/projects/[projectId]/practice/page": "/projects/[projectId]/practice",
   "/(app)/projects/new/page": "/projects/new",
   "/(app)/projects/page": "/projects",
+  "/(app)/subjects/[subject]/[module]/page": "/subjects/[subject]/[module]",
+  "/(app)/subjects/cpp/page": "/subjects/cpp",
+  "/(app)/subjects/math/page": "/subjects/math",
+  "/(app)/subjects/mechanics/page": "/subjects/mechanics",
+  "/(app)/subjects/page": "/subjects",
+  "/(app)/subjects/physics/page": "/subjects/physics",
+  "/(app)/subjects/tolerance/page": "/subjects/tolerance",
   "/(auth)/login/page": "/login",
   "/(auth)/register/page": "/register",
   "/_global-error/page": "/_global-error",
@@ -63,8 +70,5 @@
   "/english/vocab/page": "/english/vocab",
   "/english/writing/page": "/english/writing",
   "/favicon.ico/route": "/favicon.ico",
-  "/page": "/",
-  "/subjects/[subject]/[section]/page": "/subjects/[subject]/[section]",
-  "/subjects/[subject]/page": "/subjects/[subject]",
-  "/subjects/page": "/subjects"
+  "/page": "/"
 }
