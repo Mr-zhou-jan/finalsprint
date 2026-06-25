@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Zap, GraduationCap, TrendingUp, Hammer, Ruler, Cpu, Clock, ArrowRight } from "lucide-react"
+import { Zap, GraduationCap, TrendingUp, Hammer, Ruler, Cpu, Languages, Clock, ArrowRight } from "lucide-react"
 
 /** 学科首页 — 期末速通学科总站 */
 const SUBJECTS = [
@@ -12,6 +12,7 @@ const SUBJECTS = [
   { id: "mechanics", name: "工程力学", icon: Hammer, color: "from-yellow-600 to-orange-600", progress: 15, daysLeft: 7, examName: "工程力学", shortName: "力学" },
   { id: "tolerance", name: "互换性测量", icon: Ruler, color: "from-purple-500 to-pink-500", progress: 10, daysLeft: 10, examName: "互换性与测量技术", shortName: "互换性" },
   { id: "cpp", name: "C/C++程序设计", icon: Cpu, color: "from-blue-600 to-indigo-600", progress: 45, daysLeft: 3, examName: "C/C++程序设计", shortName: "C++" },
+  { id: "english", name: "大学英语四六级", icon: Languages, color: "from-red-500 to-pink-500", progress: 60, daysLeft: 10, examName: "CET-4 / CET-6", shortName: "英语", link: "/english" },
 ]
 
 export default function SubjectsHomePage() {
@@ -34,7 +35,7 @@ export default function SubjectsHomePage() {
           <Card
             key={s.id}
             className="group cursor-pointer hover:shadow-lg hover:border-orange-300 transition-all duration-200 overflow-hidden"
-            onClick={() => router.push(`/subjects/${s.id}`)}
+            onClick={() => router.push((s as any).link || `/subjects/${s.id}`)}
           >
             <CardContent className="p-0">
               {/* 顶部渐变条 */}
