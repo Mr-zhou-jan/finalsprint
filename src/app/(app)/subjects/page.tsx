@@ -12,7 +12,7 @@ const SUBJECTS = [
   { id: "mechanics", name: "工程力学", icon: Hammer, color: "from-yellow-600 to-orange-600", progress: 15, daysLeft: 7, examName: "工程力学", shortName: "力学" },
   { id: "tolerance", name: "互换性测量", icon: Ruler, color: "from-purple-500 to-pink-500", progress: 10, daysLeft: 10, examName: "互换性与测量技术", shortName: "互换性" },
   { id: "cpp", name: "C/C++程序设计", icon: Cpu, color: "from-blue-600 to-indigo-600", progress: 45, daysLeft: 3, examName: "C/C++程序设计", shortName: "C++" },
-  { id: "english", name: "大学英语四六级", icon: Languages, color: "from-red-500 to-pink-500", progress: 60, daysLeft: 10, examName: "CET-4 / CET-6", shortName: "英语", link: "/english" },
+  { id: "english", name: "大学英语四六级", icon: Languages, color: "from-red-500 to-pink-500", progress: 60, daysLeft: 10, examName: "CET-4 / CET-6", shortName: "英语", link: "/english/onboarding" },
 ]
 
 export default function SubjectsHomePage() {

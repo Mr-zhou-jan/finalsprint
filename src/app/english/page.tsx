@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { BookOpen, PenLine, Languages, Headphones, FileText, ArrowRight, Link2 } from "lucide-react";
+import { BookOpen, PenLine, Languages, Headphones, FileText, ArrowRight, Link2, Target, TrendingUp, Zap, RefreshCw } from "lucide-react";
 
 const TABS = [
   { id: "reading", label: "阅读理解", icon: BookOpen, desc: "仔细阅读 · 主旨推理 · 细节定位" },
@@ -55,13 +55,55 @@ const CATEGORIES = {
 export default function EnglishHome() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("reading");
+  const [quizResult, setQuizResult] = useState<any>(null);
   const cat = CATEGORIES[activeTab as keyof typeof CATEGORIES];
   const tab = TABS.find(t => t.id === activeTab);
+
+  useEffect(() => {
+    try { const r = JSON.parse(localStorage.getItem("learnos_quiz_results") || "null"); if (r) setQuizResult(r); } catch {}
+  }, []);
+
+  const score = quizResult ? Math.round((quizResult.totalCorrect / quizResult.totalQuestions) * 100) : 0;
+  const weakNodes = quizResult ? (quizResult.nodeScores || []).filter((n: any) => n.score < 50) : [];
+  const strongNodes = quizResult ? (quizResult.nodeScores || []).filter((n: any) => n.score >= 80) : [];
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-2">英语训练</h1>
-      <p className="text-zinc-500 mb-6">CET-4/6 专项训练 · 按题型分类 · 掌握度追踪</p>
+      <p className="text-zinc-500 mb-4">CET-4/6 专项训练 · 按题型分类 · 掌握度追踪</p>
+
+      {/* 诊断结果卡 */}
+      {quizResult && (
+        <div className="mb-6 p-5 bg-gradient-to-r from-red-50 to-rose-50 rounded-2xl border border-red-200">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold text-red-800 flex items-center gap-2"><Target className="w-4 h-4" />AI 诊断结果</h3>
+            <button onClick={() => router.push("/english/onboarding")} className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1">
+              <RefreshCw className="w-3 h-3" />重新诊断
+            </button>
+          </div>
+          <div className="grid grid-cols-3 gap-3 mb-3">
+            <div className="bg-white rounded-lg p-3 text-center">
+              <p className={`text-2xl font-bold ${score >= 80 ? "text-emerald-600" : score >= 50 ? "text-amber-600" : "text-red-600"}`}>{score}</p>
+              <p className="text-xs text-zinc-400">诊断得分/100</p>
+            </div>
+            <div className="bg-white rounded-lg p-3 text-center">
+              <p className="text-2xl font-bold text-red-500">{weakNodes.length}个</p>
+              <p className="text-xs text-zinc-400">薄弱环节</p>
+            </div>
+            <div className="bg-white rounded-lg p-3 text-center">
+              <p className="text-2xl font-bold text-emerald-500">{strongNodes.length}个</p>
+              <p className="text-xs text-zinc-400">已掌握</p>
+            </div>
+          </div>
+          {weakNodes.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {weakNodes.slice(0, 5).map((n: any, i: number) => (
+                <span key={i} className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full">{n.title} {n.score}%</span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 mb-8 bg-zinc-100 p-1 rounded-xl">

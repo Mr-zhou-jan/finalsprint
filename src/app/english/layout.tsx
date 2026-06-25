@@ -19,6 +19,8 @@ const ENGLISH_NAV = [
 
 export default function EnglishLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  // 上传页全屏无侧边栏
+  if (pathname === "/english/onboarding") return <>{children}</>
   return (
     <div className="flex min-h-screen bg-zinc-50">
       <aside className="w-56 bg-white border-r border-zinc-200 flex flex-col shrink-0">
