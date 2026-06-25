@@ -12,6 +12,6 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# Netlify Next.js Runtime — 自动处理 SSR/ISR/API 路由
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+# Netlify Next.js Runtime — 临时关闭排查上传
+# [[plugins]]
+#   package = "@netlify/plugin-nextjs"
