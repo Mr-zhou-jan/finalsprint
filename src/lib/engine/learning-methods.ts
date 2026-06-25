@@ -16,3 +16,17 @@ export function isCalcSubject(name: string): boolean {
 export function getCalcPrompt(node: { title: string; description: string }, difficulty: string): string {
   return "generate calculation problem"
 }
+
+export interface LearningMethod {
+  id: string; name: string; description: string; icon: string
+  suitableFor: SubjectCategory[]
+  steps: { type: string; title: string; description: string; durationMin: number }[]
+}
+
+export function recommendMethods(category: SubjectCategory, count: number = 3): LearningMethod[] {
+  return []
+}
+
+export function getSubjectApproach(category: SubjectCategory): string {
+  return ""
+}

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   BookOpen, ExternalLink, Globe, Loader2, PlusCircle,
-  Search, Sparkles, Trash2, Video, Youtube,
+  Search, Sparkles, Trash2, Video, Film,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getAllCourses, getNodeCount, type CourseData } from "@/lib/knowledge-loader";
