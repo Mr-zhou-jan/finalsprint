@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/client"
+import { registerWithEmail, isValidEmail, isValidPassword } from "@/lib/user-store"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,7 +11,6 @@ import { Zap, AlertCircle } from "lucide-react"
 
 export default function RegisterPage() {
   const router = useRouter()
-  const supabase = createClient()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -20,14 +19,18 @@ export default function RegisterPage() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault(); setError(""); setLoading(true)
-    if (password.length < 6) { setError("密码至少 6 位"); setLoading(false); return }
-    const { data: signUpData, error: err } = await supabase.auth.signUp({ email, password, options: { data: { name } } })
-    if (err) { setError(err.message); setLoading(false); return }
-    // 同步写入 public.User（防止触发器遗漏导致 Project 创建报外键错误）
-    if (signUpData.user) {
-      await supabase.from("User").upsert({ id: signUpData.user.id, email, name }, { onConflict: "id" })
+    const emailErr = isValidEmail(email)
+    if (emailErr) { setError(emailErr); setLoading(false); return }
+    const pwCheck = isValidPassword(password)
+    if (!pwCheck.valid) { setError(pwCheck.reason); setLoading(false); return }
+    if (!name.trim()) { setError("请输入昵称"); setLoading(false); return }
+    try {
+      await registerWithEmail(email, name, password)
+      router.push("/projects"); router.refresh()
+    } catch (err: any) {
+      setError(err.message || "注册失败，请重试")
+      setLoading(false)
     }
-    router.push("/projects"); router.refresh()
   }
 
   return (

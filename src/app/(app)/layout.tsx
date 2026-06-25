@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/client"
+import { getCurrentUser, logout, type UserInfo } from "@/lib/user-store"
 import { Button } from "@/components/ui/button"
 import { LayoutDashboard, PlusCircle, LogOut, Zap, BookOpen, GraduationCap, Cpu, Hammer, Ruler, TrendingUp, ChevronDown, Languages } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -20,22 +20,18 @@ const SUBJECTS = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
-  const supabase = createClient()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<UserInfo | null>(null)
   const [loading, setLoading] = useState(true)
-  const [subjectsOpen, setSubjectsOpen] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      // 学科页面无需登录即可访问
-      if (!user && !pathname.startsWith("/subjects")) { router.push("/login"); return }
-      setUser(user); setLoading(false)
-    })
+    const current = getCurrentUser()
+    if (!current && !pathname.startsWith("/subjects")) { router.push("/login"); return }
+    setUser(current); setLoading(false)
   }, [pathname])
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" /></div>
 
-  const handleLogout = async () => { await supabase.auth.signOut(); router.push("/login") }
+  const handleLogout = () => { logout(); router.push("/login") }
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/")
 

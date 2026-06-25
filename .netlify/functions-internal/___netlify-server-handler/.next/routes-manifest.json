@@ -296,6 +296,18 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
+      "page": "/api/auth/send-code",
+      "regex": "^/api/auth/send\\-code(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/send\\-code(?:/)?$"
+    },
+    {
+      "page": "/api/auth/verify-email",
+      "regex": "^/api/auth/verify\\-email(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/verify\\-email(?:/)?$"
+    },
+    {
       "page": "/api/english/articles",
       "regex": "^/api/english/articles(?:/)?$",
       "routeKeys": {},
@@ -336,6 +348,12 @@
       "regex": "^/api/english/listening/sets(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/english/listening/sets(?:/)?$"
+    },
+    {
+      "page": "/api/english/quiz",
+      "regex": "^/api/english/quiz(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/english/quiz(?:/)?$"
     },
     {
       "page": "/api/english/reading/analyze",
@@ -380,16 +398,70 @@
       "namedRegex": "^/api/english/writing(?:/)?$"
     },
     {
+      "page": "/api/feedback",
+      "regex": "^/api/feedback(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/feedback(?:/)?$"
+    },
+    {
+      "page": "/api/knowledge/content",
+      "regex": "^/api/knowledge/content(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/knowledge/content(?:/)?$"
+    },
+    {
+      "page": "/api/knowledge/from-video",
+      "regex": "^/api/knowledge/from\\-video(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/knowledge/from\\-video(?:/)?$"
+    },
+    {
       "page": "/api/materials/upload",
       "regex": "^/api/materials/upload(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/materials/upload(?:/)?$"
     },
     {
+      "page": "/api/plan",
+      "regex": "^/api/plan(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/plan(?:/)?$"
+    },
+    {
       "page": "/api/projects",
       "regex": "^/api/projects(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/projects(?:/)?$"
+    },
+    {
+      "page": "/api/quiz",
+      "regex": "^/api/quiz(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/quiz(?:/)?$"
+    },
+    {
+      "page": "/api/subjects/section",
+      "regex": "^/api/subjects/section(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/subjects/section(?:/)?$"
+    },
+    {
+      "page": "/coach",
+      "regex": "^/coach(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/coach(?:/)?$"
+    },
+    {
+      "page": "/cockpit",
+      "regex": "^/cockpit(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/cockpit(?:/)?$"
+    },
+    {
+      "page": "/courses",
+      "regex": "^/courses(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/courses(?:/)?$"
     },
     {
       "page": "/english",
@@ -428,6 +500,18 @@
       "namedRegex": "^/english/matching(?:/)?$"
     },
     {
+      "page": "/english/onboarding",
+      "regex": "^/english/onboarding(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/english/onboarding(?:/)?$"
+    },
+    {
+      "page": "/english/quiz",
+      "regex": "^/english/quiz(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/english/quiz(?:/)?$"
+    },
+    {
       "page": "/english/reading",
       "regex": "^/english/reading(?:/)?$",
       "routeKeys": {},
@@ -458,16 +542,64 @@
       "namedRegex": "^/english/writing(?:/)?$"
     },
     {
+      "page": "/error-book",
+      "regex": "^/error\\-book(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/error\\-book(?:/)?$"
+    },
+    {
+      "page": "/evaluation",
+      "regex": "^/evaluation(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/evaluation(?:/)?$"
+    },
+    {
+      "page": "/exam",
+      "regex": "^/exam(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/exam(?:/)?$"
+    },
+    {
       "page": "/favicon.ico",
       "regex": "^/favicon\\.ico(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/favicon\\.ico(?:/)?$"
     },
     {
+      "page": "/feynman",
+      "regex": "^/feynman(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/feynman(?:/)?$"
+    },
+    {
+      "page": "/goals",
+      "regex": "^/goals(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/goals(?:/)?$"
+    },
+    {
+      "page": "/knowledge",
+      "regex": "^/knowledge(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/knowledge(?:/)?$"
+    },
+    {
+      "page": "/knowledge-admin",
+      "regex": "^/knowledge\\-admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/knowledge\\-admin(?:/)?$"
+    },
+    {
       "page": "/login",
       "regex": "^/login(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/memory",
+      "regex": "^/memory(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/memory(?:/)?$"
     },
     {
       "page": "/projects",
@@ -486,6 +618,12 @@
       "regex": "^/register(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/register(?:/)?$"
+    },
+    {
+      "page": "/score-target",
+      "regex": "^/score\\-target(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/score\\-target(?:/)?$"
     },
     {
       "page": "/subjects",
@@ -522,6 +660,18 @@
       "regex": "^/subjects/tolerance(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/subjects/tolerance(?:/)?$"
+    },
+    {
+      "page": "/today",
+      "regex": "^/today(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/today(?:/)?$"
+    },
+    {
+      "page": "/training",
+      "regex": "^/training(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/training(?:/)?$"
     }
   ],
   "dataRoutes": [],

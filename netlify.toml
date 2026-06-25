@@ -12,6 +12,5 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# Netlify Next.js Runtime — 临时关闭排查上传
 # [[plugins]]
 #   package = "@netlify/plugin-nextjs"

@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/client"
+import { loginWithEmail } from "@/lib/user-store"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,7 +11,6 @@ import { Zap, AlertCircle } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
-  const supabase = createClient()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -19,8 +18,10 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault(); setError(""); setLoading(true)
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password })
-    if (err) { setError(err.message === "Invalid login credentials" ? "邮箱或密码错误" : err.message); setLoading(false); return }
+    if (!email.trim()) { setError("请输入邮箱"); setLoading(false); return }
+    if (!password) { setError("请输入密码"); setLoading(false); return }
+    const user = await loginWithEmail(email, password)
+    if (!user) { setError("邮箱或密码错误"); setLoading(false); return }
     router.push("/projects"); router.refresh()
   }
 
