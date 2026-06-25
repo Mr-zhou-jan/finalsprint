@@ -2,6 +2,7 @@ name: Deploy to Netlify
 on:
   push:
     branches: [master]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -16,4 +17,4 @@ jobs:
       - name: Deploy to Netlify
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: npx netlify-cli deploy --prod --dir .next --site 5dc4b4e4-97c8-449d-a305-53e42f80be87 --message "GH Actions: ${{ github.sha }}"
+        run: npx netlify-cli deploy --prod --dir .next --site 5dc4b4e4-97c8-449d-a305-53e42f80be87 --message "GH Actions deploy"
